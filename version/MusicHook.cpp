@@ -1,7 +1,4 @@
 ﻿#include "MusicHook.h"
-#include <Psapi.h>
-#include <TlHelp32.h>
-#include <thread>
 #include "./MinHook/MinHook.h"
 
 namespace MusicPlugin
@@ -90,6 +87,13 @@ namespace MusicPlugin
 		return funcHead;
 	}
 
+	uintptr_t Scanner::ResolveRip(uintptr_t address, uintptr_t offsetIdx, uint32_t instSize)
+	{
+		if (!address) return 0;
+		int32_t ripOffset = *(int32_t*)(address + offsetIdx);
+		return address + instSize + ripOffset;
+	}
+
 	__int64 __fastcall MusicHook::HookedAudioplayer_onLoad(void* a1, void* a2)
 	{
 		if (a1)
@@ -118,6 +122,12 @@ namespace MusicPlugin
 			//	Utils::Logger::Log("Hook audioplayer.onLoad Success");
 			//}
 			HardwareHook::Instance().Install(pOnLoad);
+		}
+
+		auto POnPlayProgress = Scanner::FindFunction(L"cloudmusic.dll", L"audioplayer.onPlayProgress");
+		if (POnPlayProgress)
+		{
+			TickMonitor::Instance().Initialize(POnPlayProgress);
 		}
 	}
 
@@ -221,6 +231,57 @@ namespace MusicPlugin
 		{
 			RemoveVectoredExceptionHandler(m_vehHandle);
 			m_vehHandle = nullptr;
+		}
+	}
+
+	bool TickMonitor::Initialize(uintptr_t POnPlayProgress)
+	{
+		// movsd [rip+nn], xmm7
+		std::array<BYTE, 4> TickPat = { 0xF2, 0x0F, 0x11, 0x3D };
+		// movsd [rip+nn], xmm6
+		std::array<BYTE, 4> TotalPat = { 0xF2, 0X0F, 0X11, 0X35 };
+
+		auto insTotal = Scanner::ScanPattern(POnPlayProgress, 200, TotalPat.data(), TotalPat.size());
+		auto insTick = Scanner::ScanPattern(POnPlayProgress, 200, TickPat.data(), TickPat.size());
+
+		if (insTotal && insTick)
+		{
+			m_pTotalTick = (double*)Scanner::ResolveRip(insTotal, 4, 8);
+			m_pCurrentTick = (double*)Scanner::ResolveRip(insTick, 4, 8);
+			Utils::Logger::Log("Tick Address Found: CurrentTick={}, TotalTick={}", (void*)m_pCurrentTick, (void*)m_pTotalTick);
+		}
+		else
+		{
+			Utils::Logger::Error("Failed to locate tick global variables via pattern");
+			return false;
+		}
+
+		m_running = true;
+		m_worker = std::thread(&TickMonitor::WorkerLoop, this);
+		m_worker.detach();
+		return true;
+	}
+
+	void TickMonitor::Stop()
+	{
+		m_running = false;
+	}
+
+	void TickMonitor::WorkerLoop()
+	{
+		double lastTick = -1.0;
+		while (m_running)
+		{
+			if (m_pCurrentTick)
+			{
+				double current = *m_pCurrentTick;
+				if (abs(current - lastTick) > 0.01)
+				{
+					LyricProc::Lyric::Instance().UpdateCurrentTick(current);
+					lastTick = current;
+				}
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
 	}
 

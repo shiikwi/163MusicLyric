@@ -15,6 +15,7 @@ namespace LyricProc
 
 		void UpdateCurrentSong(const std::string& songId);
 		std::string GetCurrentSong();
+		void UpdateCurrentTick(double tick);
 
 	private:
 		Lyric(const Lyric&) = delete;
@@ -22,6 +23,7 @@ namespace LyricProc
 		Lyric() = default;
 		~Lyric() = default;
 
+		double m_CurrentTick;
 		std::string m_currentSongId;
 		std::mutex m_mutex;
 	};

@@ -19,5 +19,13 @@ namespace LyricProc
 		return m_currentSongId;
 	}
 
+	void Lyric::UpdateCurrentTick(double tick)
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		if (m_CurrentTick == tick) return;
+		m_CurrentTick = tick;
+		Utils::Logger::Log("Tick to: {}", m_CurrentTick);
+	}
+
 
 }

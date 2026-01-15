@@ -1,5 +1,10 @@
 ﻿#pragma once
 #include "Lyric.h"
+#include <Psapi.h>
+#include <TlHelp32.h>
+#include <thread>
+#include <atomic>
+#include <array>
 namespace MusicPlugin
 {
 	typedef __int64(__fastcall* tOnLoad)(void* a1, void* a2);
@@ -72,13 +77,40 @@ namespace MusicPlugin
 		void ApplyThreads(bool active);
 	};
 
+	class  TickMonitor
+	{
+	public:
+		static TickMonitor& Instance()
+		{
+			static TickMonitor instance;
+			return instance;
+		}
 
+		bool Initialize(uintptr_t POnPlayProgress);
+		void Stop();
+
+		double GetCurrentTick() const { return m_pCurrentTick ? *m_pCurrentTick : 0.0; }
+		double GetTotalTick() const { return m_pTotalTick ? *m_pTotalTick : 0.0; }
+
+	private:
+		TickMonitor(const TickMonitor&) = delete;
+		TickMonitor& operator=(const TickMonitor&) = delete;
+		TickMonitor() = default;
+		~TickMonitor() = default;
+
+		double* m_pCurrentTick = nullptr;
+		double* m_pTotalTick = nullptr;
+		std::atomic<bool> m_running{ false };
+		std::thread m_worker;
+
+		void WorkerLoop();
+	};
 
 	class Scanner
 	{
 	public:
 		static uintptr_t FindFunction(const wchar_t* dllName, const wchar_t* targetStr);
-	private:
 		static uintptr_t ScanPattern(uintptr_t base, uintptr_t size, BYTE* pattern, size_t patternSize);
+		static uintptr_t ResolveRip(uintptr_t address, uintptr_t offsetIdx, uint32_t instSize);
 	};
 }
