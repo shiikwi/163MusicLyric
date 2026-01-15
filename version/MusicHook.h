@@ -46,6 +46,33 @@ namespace MusicPlugin
 		static HMODULE WINAPI HookedLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
 	};
 
+	class HardwareHook
+	{
+	public:
+		static HardwareHook& Instance()
+		{
+			static HardwareHook instance;
+			return instance;
+		}
+
+		bool Install(uintptr_t address);
+		void Uninstall();
+
+	private:
+		HardwareHook(const HardwareHook&) = delete;
+		HardwareHook& operator=(const HardwareHook&) = delete;
+		HardwareHook() = default;
+		~HardwareHook() { Uninstall(); }
+
+		uintptr_t m_targetAddress = 0;
+		PVOID m_vehHandle = nullptr;
+
+		static LONG CALLBACK VEH(PEXCEPTION_POINTERS pExcptInfo);
+		bool SetHBP(HANDLE hThread, bool active);
+		void ApplyThreads(bool active);
+	};
+
+
 
 	class Scanner
 	{

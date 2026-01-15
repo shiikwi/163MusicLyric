@@ -2,13 +2,15 @@
 
 namespace LyricProc
 {
-	void Lyric::UpdateCurrentSong(const std::string& songId)
+	void Lyric::UpdateCurrentSong(const std::string& rawId)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		if (m_currentSongId == songId) return;
+		size_t pos = rawId.find('_');
+		auto SongId = (pos != std::string::npos) ? rawId.substr(0, pos) : rawId;
 
-		m_currentSongId = songId;
-		Utils::Logger::Log("Updated current songId to: {}", songId);
+		if (m_currentSongId == SongId) return;
+		m_currentSongId = SongId;
+		Utils::Logger::Log("Updated current songId to: {}", SongId);
 	}
 
 	std::string Lyric::GetCurrentSong()

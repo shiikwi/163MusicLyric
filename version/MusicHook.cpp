@@ -1,10 +1,21 @@
 ﻿#include "MusicHook.h"
 #include <Psapi.h>
+#include <TlHelp32.h>
 #include <thread>
 #include "./MinHook/MinHook.h"
 
 namespace MusicPlugin
 {
+	bool IsMainProcess()
+	{
+		wchar_t* cmdLine = GetCommandLineW();
+		if (wcsstr(cmdLine, L"--type="))
+		{
+			return false;
+		}
+		return true;
+	}
+
 	uintptr_t Scanner::ScanPattern(uintptr_t base, uintptr_t size, BYTE* pattern, size_t patternSize)
 	{
 		for (uintptr_t i = 0; i < size - patternSize; i++)
@@ -101,11 +112,12 @@ namespace MusicPlugin
 		auto pOnLoad = Scanner::FindFunction(L"cloudmusic.dll", L"audioplayer.onLoad");
 		if (pOnLoad)
 		{
-			if (MH_CreateHook((LPVOID)pOnLoad, &HookedAudioplayer_onLoad, (LPVOID*)&TrueAudioplayer_onLoad) == MH_OK)
-			{
-				MH_EnableHook((LPVOID)pOnLoad);
-				Utils::Logger::Log("Hook audioplayer.onLoad Success");
-			}
+			//if (MH_CreateHook((LPVOID)pOnLoad, &HookedAudioplayer_onLoad, (LPVOID*)&TrueAudioplayer_onLoad) == MH_OK)
+			//{
+			//	MH_EnableHook((LPVOID)pOnLoad);
+			//	Utils::Logger::Log("Hook audioplayer.onLoad Success");
+			//}
+			HardwareHook::Instance().Install(pOnLoad);
 		}
 	}
 
@@ -124,13 +136,102 @@ namespace MusicPlugin
 		return hMod;
 	}
 
+	LONG HardwareHook::VEH(PEXCEPTION_POINTERS pExcptInfo)
+	{
+		if (pExcptInfo->ExceptionRecord->ExceptionCode == EXCEPTION_SINGLE_STEP)
+		{
+			if (pExcptInfo->ExceptionRecord->ExceptionAddress == (PVOID)Instance().m_targetAddress)
+			{
+				void* a1 = (void*)pExcptInfo->ContextRecord->Rcx;
+				if (a1)
+				{
+					try
+					{
+						SSOAnalyzer* sa = (SSOAnalyzer*)a1;
+						auto rawId = sa->GetString();
+						LyricProc::Lyric::Instance().UpdateCurrentSong(rawId);
+					}
+					catch (...) {}
+				}
+
+				pExcptInfo->ContextRecord->EFlags |= 0x10000;
+				return EXCEPTION_CONTINUE_EXECUTION;
+			}
+		}
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
+
+	bool HardwareHook::SetHBP(HANDLE hThread, bool active)
+	{
+		CONTEXT ctx;
+		ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
+		if (!GetThreadContext(hThread, &ctx)) return false;
+		if (active)
+		{
+			ctx.Dr0 = m_targetAddress;
+			ctx.Dr7 = (1 << 0) | (1 << 8);
+		}
+		else
+		{
+			ctx.Dr0 = 0;
+			ctx.Dr7 &= ~(1 << 0);
+		}
+
+		return SetThreadContext(hThread, &ctx);
+	}
+
+	void HardwareHook::ApplyThreads(bool active)
+	{
+		HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+		if (hSnapshot != INVALID_HANDLE_VALUE)
+		{
+			THREADENTRY32 te;
+			te.dwSize = sizeof(te);
+			if (Thread32First(hSnapshot, &te))
+			{
+				do
+				{
+					if (te.th32OwnerProcessID == GetCurrentProcessId())
+					{
+						HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te.th32ThreadID);
+						if (hThread)
+						{
+							SetHBP(hThread, active);
+							CloseHandle(hThread);
+						}
+					}
+				} while (Thread32Next(hSnapshot, &te));
+			}
+			CloseHandle(hSnapshot);
+		}
+	}
+
+	bool HardwareHook::Install(uintptr_t address)
+	{
+		m_targetAddress = address;
+		m_vehHandle = AddVectoredExceptionHandler(1, VEH);
+		ApplyThreads(true);
+		return true;
+	}
+
+	void HardwareHook::Uninstall()
+	{
+		ApplyThreads(false);
+		if (m_vehHandle)
+		{
+			RemoveVectoredExceptionHandler(m_vehHandle);
+			m_vehHandle = nullptr;
+		}
+	}
+
 	void MusicHook::Initialize()
 	{
-		if (MH_Initialize() != MH_OK) return;
+		//if (MH_Initialize() != MH_OK) return;
 		//HMODULE hKernelbase = GetModuleHandleW(L"kernelbase.dll");
-		//if(!hKernebase) Utils::Logger::Log("GetModuleHandleW kernelbase.dll failed");
+		//if(!hKernelbase) Utils::Logger::Log("GetModuleHandleW kernelbase.dll failed");
 		//MH_CreateHook(&LoadLibraryExW, &HookedLoadLibraryExW, (LPVOID*)&TrueLoadLibraryExW);
 		//MH_EnableHook(MH_ALL_HOOKS);
+		if (!IsMainProcess()) return;
 		Utils::Logger::Log("Start Hook");
 
 		HMODULE hCloudMusicAlr = GetModuleHandleW(L"cloudmusic.dll");
@@ -140,8 +241,8 @@ namespace MusicPlugin
 
 	void MusicHook::Free()
 	{
-		MH_DisableHook(MH_ALL_HOOKS);
-		MH_Uninitialize();
+		//MH_DisableHook(MH_ALL_HOOKS);
+		//MH_Uninitialize();
 	}
 
 }
