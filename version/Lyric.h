@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "Utils.h"
 #include <mutex>
+#include <string>
 
 namespace LyricProc
 {

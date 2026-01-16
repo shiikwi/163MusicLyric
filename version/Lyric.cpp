@@ -1,4 +1,5 @@
 ﻿#include "Lyric.h"
+#include "Utils.h"
 
 namespace LyricProc
 {

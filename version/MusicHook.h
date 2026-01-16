@@ -1,10 +1,9 @@
 ﻿#pragma once
-#include "Lyric.h"
-#include <Psapi.h>
-#include <TlHelp32.h>
-#include <thread>
+#include <Windows.h>
+#include <string>
 #include <atomic>
-#include <array>
+#include <thread>
+
 namespace MusicPlugin
 {
 	typedef __int64(__fastcall* tOnLoad)(void* a1, void* a2);
