@@ -34,6 +34,7 @@ namespace Utils
 		static void AttachConsole()
 		{
 			::AllocConsole();
+			SetConsoleOutputCP(CP_UTF8);
 			FILE* f;
 			freopen_s(&f, "CONOUT$", "w", stdout);
 			freopen_s(&f, "CONOUT$", "w", stderr);

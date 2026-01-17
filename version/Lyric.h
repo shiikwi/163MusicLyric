@@ -1,9 +1,17 @@
 ﻿#pragma once
 #include <mutex>
 #include <string>
+#include <vector>
+#include <map>
 
 namespace LyricProc
 {
+	struct LyricLine
+	{
+		std::string ori;
+		std::string trans;
+	};
+
 	class Lyric
 	{
 	public:
@@ -16,6 +24,8 @@ namespace LyricProc
 		void UpdateCurrentSong(const std::string& songId);
 		std::string GetCurrentSong();
 		void UpdateCurrentTick(double tick);
+		void ParseLyricJson(const std::string& jsonStr);
+		LyricLine GetCurrentLyricLine(double currtime);
 
 	private:
 		Lyric(const Lyric&) = delete;
@@ -25,6 +35,10 @@ namespace LyricProc
 
 		double m_CurrentTick;
 		std::string m_currentSongId;
-		std::mutex m_mutex;
+		std::recursive_mutex m_mutex;
+		std::string m_LyricsJson;
+		std::map<double, LyricLine>m_lyricMap;
+		void ParseLyricLine(const std::string& lrcStr, bool isTrans);
+		double ParseTimeStamp(const std::string& timeStr);
 	};
 }

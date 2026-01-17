@@ -106,9 +106,7 @@ namespace MusicPlugin
 			SSOAnalyzer* sa = (SSOAnalyzer*)a1;
 			auto rawId = sa->GetString();
 
-			size_t pos = rawId.find('_');
-			auto SongId = (pos != std::string::npos) ? rawId.substr(0, pos) : rawId;
-			LyricProc::Lyric::Instance().UpdateCurrentSong(SongId);
+			LyricProc::Lyric::Instance().UpdateCurrentSong(rawId);
 		}
 
 		return TrueAudioplayer_onLoad(a1, a2);

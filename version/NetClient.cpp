@@ -1,4 +1,5 @@
 ﻿#include "NetClient.h"
+#include "Lyric.h"
 #include "Utils.h"
 #include "cpr/cpr.h"
 #include <fstream>
@@ -50,16 +51,20 @@ namespace LyricProc
 			cpr::Header(),
 			cpr::Timeout{ 5000 }
 		);
+
+		std::string resJson;
 		if (res.status_code == 200)
 		{
 			Utils::Logger::Log("HTTPS Request Success");
 
-			SaveJson(SongId, res.text);
+			//SaveJson(SongId, res.text);
+			resJson = res.text;
 		}
 		else
 		{
 			Utils::Logger::Error("HTTPS Request Failed: {}, {}", res.status_code, res.error.message);
 		}
+		Lyric::Instance().ParseLyricJson(resJson);
 	}
 
 	void NetClient::SaveJson(const std::string& songId, const std::string& content)
