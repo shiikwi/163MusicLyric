@@ -30,11 +30,9 @@
     <ClCompile Include="MusicHook.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="MinHook\libMinHook.lib">
-      <Filter>MinHook</Filter>
-    </Library>
+    <ClCompile Include="NetClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MinHook\MinHook.h">
@@ -50,6 +48,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NetClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

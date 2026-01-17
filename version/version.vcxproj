@@ -114,6 +114,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.\3rd;..\cpr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,6 +122,8 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>.\3rd\cpr;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cpr.lib;libcurl.lib;ws2_32.lib;crypt32.lib;wldap32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +139,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\3rd;..\cpr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,21 +148,22 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>.\3rd\cpr;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cpr.lib;libcurl.lib;ws2_32.lib;crypt32.lib;wldap32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Lyric.cpp" />
     <ClCompile Include="MusicHook.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="MinHook\libMinHook.lib" />
+    <ClCompile Include="NetClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hijack\version.h" />
     <ClInclude Include="Lyric.h" />
     <ClInclude Include="MinHook\MinHook.h" />
     <ClInclude Include="MusicHook.h" />
+    <ClInclude Include="NetClient.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,6 @@
 ﻿#include "Lyric.h"
 #include "Utils.h"
+#include "NetClient.h"
 
 namespace LyricProc
 {
@@ -12,6 +13,7 @@ namespace LyricProc
 		if (m_currentSongId == SongId) return;
 		m_currentSongId = SongId;
 		Utils::Logger::Log("Updated current songId to: {}", SongId);
+		NetClient::Instance().RequestLyric(SongId);
 	}
 
 	std::string Lyric::GetCurrentSong()
