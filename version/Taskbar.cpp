@@ -9,12 +9,13 @@ namespace Taskbar
 		WNDCLASSEXW wc = { sizeof(wc), CS_HREDRAW | CS_VREDRAW, WndProc, 0, 0, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"TaskbarLyricWnd", NULL };
 		RegisterClassExW(&wc);
 
+		HWND hTray = FindWindowW(L"Shell_TrayWnd", NULL);
 		m_hwnd = CreateWindowEx(
-			WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+			WS_EX_LAYERED | WS_EX_TRANSPARENT | (Config::g_Config.AlwaysTop ? WS_EX_TOPMOST : 0) | WS_EX_TOOLWINDOW,
 			L"TaskbarLyricWnd", L"",
 			WS_POPUP,
 			0, 0, 1, 1,
-			NULL, NULL, GetModuleHandle(NULL), NULL
+			hTray, NULL, GetModuleHandle(NULL), NULL
 		);
 
 		if (!m_hwnd) return;
@@ -59,13 +60,17 @@ namespace Taskbar
 		if (w < 10) w = 10;
 
 		static RECT lastRect;
+		auto hOrder = Config::g_Config.AlwaysTop ? HWND_TOPMOST : HWND_NOTOPMOST;
 		if (x != lastRect.left || w != (lastRect.right - lastRect.left))
 		{
-			auto hOrder = Config::g_Config.AlwaysTop ? HWND_TOPMOST : hTray;
 			SetWindowPos(m_hwnd, hOrder, x, y, w, h, SWP_NOACTIVATE);
 			m_render.RecreateRT(m_hwnd);
 			Utils::Logger::Log("Window Pos: x={}, y={}, w={}, h={}", x, y, w, h);
 			lastRect = { x, y, x + w, y + h };
+		}
+		else
+		{
+			SetWindowPos(m_hwnd, hOrder, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 		}
 	}
 	LRESULT TaskbarWindow::WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
