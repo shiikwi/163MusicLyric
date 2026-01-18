@@ -15,9 +15,10 @@ namespace Config
 
 		unsigned int TransFontColor = 0xB0FFFFFF;
 
-		int XLeftMargin = 5.0f;
-		int XRightMargin = 5.0f;
-		float YPadding = 0.5f;
+		bool CenterAlign = true;
+		float XLeftMargin = 10.0f;
+		float XRightMargin = 50.0f;
+		float YPadding = 5.0f;
 
 		std::wstring Show_Ori;
 		std::wstring Show_Trans;

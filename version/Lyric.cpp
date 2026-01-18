@@ -19,6 +19,7 @@ namespace LyricProc
 
 		if (m_currentSongId == SongId) return;
 		m_currentSongId = SongId;
+		m_lyricMap.clear();
 		Utils::Logger::Log("Updated current songId to: {}", SongId);
 		NetClient::Instance().RequestLyric(SongId);
 	}
@@ -49,7 +50,6 @@ namespace LyricProc
 	void Lyric::ParseLyricJson(const std::string& jsonStr)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutex);
-		m_lyricMap.clear();
 		m_LyricsJson = jsonStr;
 		if (m_LyricsJson.empty())
 		{

@@ -49,7 +49,9 @@ namespace LyricProc
 			cpr::Url{ "https://music.163.com/api/song/lyric/v1" },
 			params,
 			cpr::Header(),
-			cpr::Timeout{ 5000 }
+			cpr::Timeout{ 2000 },
+			cpr::VerifySsl{ false },
+			cpr::Proxies{}
 		);
 
 		std::string resJson;

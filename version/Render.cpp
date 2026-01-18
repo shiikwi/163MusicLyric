@@ -21,9 +21,13 @@ namespace Render
 		auto size = m_pRT->GetSize();
 		ComPtr<ID2D1SolidColorBrush> brush;
 
+		auto alignment = cfg.CenterAlign ? DWRITE_TEXT_ALIGNMENT_CENTER : DWRITE_TEXT_ALIGNMENT_LEADING;
+
 		//Draw Main Lyric
 		ComPtr<IDWriteTextFormat> fmtOri;
 		m_pDWFactory->CreateTextFormat(cfg.Font.c_str(), NULL, DWRITE_FONT_WEIGHT_MEDIUM, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, cfg.MainFontSize, L"zh-CN", &fmtOri);
+		fmtOri->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+		fmtOri->SetTextAlignment(alignment);
 		m_pRT->CreateSolidColorBrush(D2D1::ColorF(cfg.MainFontColor, (cfg.MainFontColor >> 24) / 255.0f), &brush);
 
 		if (cfg.Show_Trans.empty())
@@ -39,6 +43,8 @@ namespace Render
 
 			ComPtr<IDWriteTextFormat> fmtTrans;
 			m_pDWFactory->CreateTextFormat(cfg.Font.c_str(), NULL, DWRITE_FONT_WEIGHT_MEDIUM, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, cfg.TransFontSize, L"zh-CN", &fmtTrans);
+			fmtTrans->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+			fmtTrans->SetTextAlignment(alignment);
 			brush->SetColor(D2D1::ColorF(cfg.TransFontColor, (cfg.TransFontColor >> 24) / 255.0f));
 			fmtTrans->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 			m_pRT->DrawTextW(cfg.Show_Trans.c_str(), cfg.Show_Trans.length(), fmtTrans.Get(), D2D1::RectF(0, 0, size.width, size.height - 2), brush.Get());

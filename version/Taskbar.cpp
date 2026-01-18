@@ -26,23 +26,35 @@ namespace Taskbar
 		SetTimer(m_hwnd, 1, 1000, NULL);
 	}
 
+	static BOOL CALLBACK FindTaskList(HWND hwnd, LPARAM lParam)
+	{
+		wchar_t className[256];
+		if (GetClassNameW(hwnd, className, 256) && wcscmp(className, L"MSTaskListWClass") == 0)
+		{
+			*(HWND*)lParam = hwnd;
+			return false;
+		}
+		return true;
+	}
+
 	void TaskbarWindow::Resize()
 	{
 		HWND hTray = FindWindowW(L"Shell_TrayWnd", NULL);
-		HWND hInputSite = FindWindowExW(hTray, NULL, L"Windows.UI.Input.InputSite.WindowClass", NULL);
+		HWND hTaskList = NULL;
+		EnumChildWindows(hTray, FindTaskList, (LPARAM)&hTaskList);
 
 		RECT trayRect, inputRect;
 		GetWindowRect(hTray, &trayRect);
 
-		int x = trayRect.left + (int)Config::g_Config.XLeftMargin;
-		int y = trayRect.top;
-		int h = trayRect.bottom - trayRect.top;
-		int w = 400;
+		LONG x = trayRect.left + Config::g_Config.XLeftMargin;
+		LONG y = trayRect.top;
+		LONG h = trayRect.bottom - trayRect.top;
+		LONG w = 400;
 
-		if (hInputSite)
+		if (hTaskList)
 		{
-			GetWindowRect(hInputSite, &inputRect);
-			w = inputRect.left - x - (int)Config::g_Config.XRightMargin;
+			GetWindowRect(hTaskList, &inputRect);
+			w = inputRect.left - x - Config::g_Config.XRightMargin;
 		}
 		if (w < 10) w = 10;
 
