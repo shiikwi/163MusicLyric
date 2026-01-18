@@ -61,7 +61,8 @@ namespace Taskbar
 		static RECT lastRect;
 		if (x != lastRect.left || w != (lastRect.right - lastRect.left))
 		{
-			SetWindowPos(m_hwnd, HWND_TOPMOST, x, y, w, h, SWP_NOACTIVATE);
+			auto hOrder = Config::g_Config.AlwaysTop ? HWND_TOPMOST : hTray;
+			SetWindowPos(m_hwnd, hOrder, x, y, w, h, SWP_NOACTIVATE);
 			m_render.RecreateRT(m_hwnd);
 			Utils::Logger::Log("Window Pos: x={}, y={}, w={}, h={}", x, y, w, h);
 			lastRect = { x, y, x + w, y + h };

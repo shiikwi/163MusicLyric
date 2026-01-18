@@ -15,6 +15,7 @@ namespace Config
 
 		unsigned int TransFontColor = 0xB0FFFFFF;
 
+		bool AlwaysTop = false;
 		bool CenterAlign = true;
 		float XLeftMargin = 10.0f;
 		float XRightMargin = 50.0f;
