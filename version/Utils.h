@@ -41,4 +41,12 @@ namespace Utils
 			SetConsoleTitleW(L"TaskbarLyr Debug Console");
 		}
 	};
+
+	static std::wstring UTF82WString(const std::string& str) {
+		if (str.empty()) return std::wstring();
+		int size = MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
+		std::wstring result(size, 0);
+		MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), &result[0], size);
+		return result;
+	}
 }

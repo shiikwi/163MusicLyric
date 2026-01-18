@@ -2,6 +2,7 @@
 #include "Lyric.h"
 #include "Utils.h"
 #include "NetClient.h"
+#include "Config.h"
 #include "3rd/json.hpp"
 #include <sstream>
 #include <regex>
@@ -39,8 +40,8 @@ namespace LyricProc
 		static std::string lastOri;
 		if (lyr.ori != lastOri)
 		{
-			Utils::Logger::Log("{}", lyr.ori);
-			if (!lyr.trans.empty()) Utils::Logger::Log("{}", lyr.trans);
+			Config::g_Config.Show_Ori = Utils::UTF82WString(lyr.ori);
+			Config::g_Config.Show_Trans = lyr.trans.empty() ? L"" : Utils::UTF82WString(lyr.trans);
 			lastOri = lyr.ori;
 		}
 	}

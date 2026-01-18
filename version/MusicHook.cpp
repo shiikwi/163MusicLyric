@@ -8,16 +8,6 @@
 
 namespace MusicPlugin
 {
-	bool IsMainProcess()
-	{
-		wchar_t* cmdLine = GetCommandLineW();
-		if (wcsstr(cmdLine, L"--type="))
-		{
-			return false;
-		}
-		return true;
-	}
-
 	uintptr_t Scanner::ScanPattern(uintptr_t base, uintptr_t size, BYTE* pattern, size_t patternSize)
 	{
 		for (uintptr_t i = 0; i < size - patternSize; i++)
@@ -295,7 +285,6 @@ namespace MusicPlugin
 		//if(!hKernelbase) Utils::Logger::Log("GetModuleHandleW kernelbase.dll failed");
 		//MH_CreateHook(&LoadLibraryExW, &HookedLoadLibraryExW, (LPVOID*)&TrueLoadLibraryExW);
 		//MH_EnableHook(MH_ALL_HOOKS);
-		if (!IsMainProcess()) return;
 		Utils::Logger::Log("Start Hook");
 
 		HMODULE hCloudMusicAlr = GetModuleHandleW(L"cloudmusic.dll");

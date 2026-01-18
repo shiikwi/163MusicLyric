@@ -33,6 +33,15 @@
     <ClCompile Include="NetClient.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Render.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Taskbar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MinHook\MinHook.h">
@@ -51,6 +60,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="NetClient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Taskbar.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
