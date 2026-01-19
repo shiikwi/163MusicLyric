@@ -67,11 +67,11 @@ namespace MusicPlugin
 		uintptr_t funcHead = 0;
 		for (uintptr_t i = leaOpAddr; i > moduleBase; --i)
 		{
-			if (*(BYTE*)i == 0xCC)
+			if (*(BYTE*)i == 0xCC && *(BYTE*)(i + 1) == 0xCC)
 			{
-				if (*(BYTE*)(i + 1) != 0xCC)
+				if (*(BYTE*)(i + 2) != 0xCC)
 				{
-					funcHead = i + 1;
+					funcHead = i + 2;
 					break;
 				}
 			}
