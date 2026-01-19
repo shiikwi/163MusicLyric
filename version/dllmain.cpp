@@ -1,5 +1,4 @@
-﻿#pragma comment(lib, "./MinHook/libMinHook.lib")
-#include "Utils.h"
+﻿#include "Utils.h"
 #include "MusicHook.h"
 #include "Taskbar.h"
 #include "./Hijack/version.h";

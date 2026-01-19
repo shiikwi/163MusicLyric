@@ -24,12 +24,6 @@ namespace LyricProc
 		NetClient::Instance().RequestLyric(SongId);
 	}
 
-	std::string Lyric::GetCurrentSong()
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutex);
-		return m_currentSongId;
-	}
-
 	void Lyric::UpdateCurrentTick(double tick)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutex);

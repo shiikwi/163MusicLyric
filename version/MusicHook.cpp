@@ -1,7 +1,6 @@
 ﻿#include "MusicHook.h"
 #include "Utils.h"
 #include "Lyric.h"
-#include "./MinHook/MinHook.h"
 #include <array>
 #include <Psapi.h>
 #include <TlHelp32.h>

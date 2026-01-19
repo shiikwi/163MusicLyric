@@ -22,7 +22,6 @@ namespace LyricProc
 		}
 
 		void UpdateCurrentSong(const std::string& songId);
-		std::string GetCurrentSong();
 		void UpdateCurrentTick(double tick);
 		void ParseLyricJson(const std::string& jsonStr);
 		LyricLine GetCurrentLyricLine(double currtime);
