@@ -10,7 +10,7 @@ namespace Taskbar
 		RegisterClassExW(&wc);
 
 		HWND hTray = FindWindowW(L"Shell_TrayWnd", NULL);
-		m_hwnd = CreateWindowEx(
+		m_hwnd = CreateWindowExW(
 			WS_EX_LAYERED | WS_EX_TRANSPARENT | (Config::g_Config.AlwaysTop ? WS_EX_TOPMOST : 0) | WS_EX_TOOLWINDOW,
 			L"TaskbarLyricWnd", L"",
 			WS_POPUP,

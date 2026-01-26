@@ -33,13 +33,13 @@ namespace Render
 		if (cfg.Show_Trans.empty())
 		{
 			fmtOri->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-			m_pRT->DrawTextW(cfg.Show_Ori.c_str(), cfg.Show_Ori.length(), fmtOri.Get(), D2D1::RectF(0, 0, size.width, size.height), brush.Get());
+			m_pRT->DrawText(cfg.Show_Ori.c_str(), cfg.Show_Ori.length(), fmtOri.Get(), D2D1::RectF(0, 0, size.width, size.height), brush.Get());
 		}
 		else
 		{
 			//Draw Main&Trans
 			fmtOri->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-			m_pRT->DrawTextW(cfg.Show_Ori.c_str(), cfg.Show_Ori.length(), fmtOri.Get(), D2D1::RectF(0, cfg.YPadding, size.width, size.height), brush.Get());
+			m_pRT->DrawText(cfg.Show_Ori.c_str(), cfg.Show_Ori.length(), fmtOri.Get(), D2D1::RectF(0, cfg.YPadding, size.width, size.height), brush.Get());
 
 			ComPtr<IDWriteTextFormat> fmtTrans;
 			m_pDWFactory->CreateTextFormat(cfg.Font.c_str(), NULL, DWRITE_FONT_WEIGHT_MEDIUM, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, cfg.TransFontSize, L"zh-CN", &fmtTrans);
@@ -47,7 +47,7 @@ namespace Render
 			fmtTrans->SetTextAlignment(alignment);
 			brush->SetColor(D2D1::ColorF(cfg.TransFontColor, (cfg.TransFontColor >> 24) / 255.0f));
 			fmtTrans->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
-			m_pRT->DrawTextW(cfg.Show_Trans.c_str(), cfg.Show_Trans.length(), fmtTrans.Get(), D2D1::RectF(0, 0, size.width, size.height - 2), brush.Get());
+			m_pRT->DrawText(cfg.Show_Trans.c_str(), cfg.Show_Trans.length(), fmtTrans.Get(), D2D1::RectF(0, 0, size.width, size.height - 2), brush.Get());
 		}
 
 		m_pRT->EndDraw();

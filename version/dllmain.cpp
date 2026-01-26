@@ -1,7 +1,7 @@
 ﻿#include "Utils.h"
 #include "MusicHook.h"
 #include "Taskbar.h"
-#include "./Hijack/version.h";
+#include "./Hijack/version.h"
 
 extern "C" __declspec(dllexport) void Lyrics() {}
 
@@ -28,9 +28,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	case DLL_PROCESS_ATTACH:
 	{
 		DisableThreadLibraryCalls(hModule);
-		if (IsMainProcess)
+		if (IsMainProcess())
 		{
-			Utils::Console::AttachConsole();
+			//Utils::Console::AttachConsole();
 			MusicPlugin::MusicHook::Instance().Initialize();
 			CreateThread(NULL, 0, [](LPVOID lpParam) -> DWORD {
 				Taskbar::TaskbarWindow::Instance().Create();

@@ -3,6 +3,7 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
+#include <condition_variable>
 
 namespace LyricProc
 {
